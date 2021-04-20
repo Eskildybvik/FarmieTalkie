@@ -60,10 +60,14 @@ class FarmieTalkie:
 	def display_channel_set(self):
 		self.gui.view_frame(Frame.SELECT_CHANNEL)
 	
+	def display_sending(self):
+		self.gui.view_frame(Frame.SENDING_MESSAGE)
+
+	def display_recording(self):
+		self.gui.view_frame(Frame.RECORDING_MESSAGE)
+
 	def show_main(self):
 		self.gui.view_frame(Frame.MAIN)
-	
-
 
 		
 def main():
