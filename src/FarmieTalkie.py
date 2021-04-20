@@ -1,8 +1,8 @@
 import stmpy
 import FarmieTalkieStates
 import logging
-import MQTTClient
-
+from GUIHandler import GUIHandler
+from MQTTClient import MQTTClient
 
 
 class FarmieTalkie:
@@ -67,15 +67,18 @@ def main():
 	stm_driver = stmpy.Driver()
 	farmietalkie_machine = FarmieTalkie()
 	stm = stmpy.Machine(
-		"FarmieTalkie", 
-		farmietalkie_machine, 
+		"FarmieTalkie",
 		farmietalkie_machine.transitions,
+		farmietalkie_machine, 
 		states=farmietalkie_machine.states
 	)
-	self._logger.debug('Component initialization finished')
+	stm_driver.add_machine(stm)
+	# self._logger.debug('Component initialization finished')
 	mqtt = MQTTClient(stm)
 	farmietalkie_machine.mqtt = mqtt
-	self.stm_driver.start(keep_active=True)
+	stm_driver.start(keep_active=True)
+	gui = GUIHandler(stm)
+	farmietalkie_machine.gui = gui
 
 
 if __name__ == "__main__":

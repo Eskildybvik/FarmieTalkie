@@ -19,11 +19,28 @@ def generate_test_sound() -> bytearray:
 
 class MQTTClient:
 
+	def __init__(self, stm: stmpy.Machine):
+		self._logger = logging.getLogger(__name__)
+		self.test_sound = generate_test_sound()
+		self.subscribed_channels = []
+
+		self.stm = stm
+		# create a new MQTT client
+		self._logger.debug(f'Connecting to MQTT broker {MQTT_BROKER} at port {MQTT_PORT}')
+		self.mqtt_client = mqtt.Client()
+		# callback methods
+		self.mqtt_client.on_connect = self.on_connect
+		self.mqtt_client.on_message = self.on_message
+		self.mqtt_client.on_disconnect = self.on_disconnect
+
+		self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+		self.mqtt_client.loop_start()
+
 	# subscribe_stored_channels in diagram
 	def on_connect(self, client, userdata, flags, rc):
 		self._logger.debug("Connected to broker")
 		self.stm.send("connect")
-		for channel in self.channels:
+		for channel in self.subscribed_channels:
 			self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
 			
 	def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
@@ -51,21 +68,6 @@ class MQTTClient:
 		self._logger.debug(f"Sending message to channel {channel}...")
 		self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + channel, payload=message, qos=2)
 
-	def __init__(self, stm: stmpy.Machine):
-		self._logger = logging.getLogger(__name__)
-		self.test_sound = generate_test_sound()
-		self.subscribed_channels = []
-
-		self.stm = stm
-		# create a new MQTT client
-		self._logger.debug(f'Connecting to MQTT broker {MQTT_BROKER} at port {MQTT_PORT}')
-		self.mqtt_client = mqtt.Client()
-		# callback methods
-		self.mqtt_client.on_connect = self.on_connect
-		self.mqtt_client.on_message = self.on_message
-		self.mqtt_client.on_disconnect = self.on_disconnect
-
-		self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
-		self.mqtt_client.loop_start()
+	
 
 		
