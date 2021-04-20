@@ -1,6 +1,6 @@
 
 def get_states():
-    states = [
+	states = [
 			{
 				"name": "disconnected",
 				"entry": "connect"
@@ -53,23 +53,23 @@ def get_states():
 				"message": "defer"
 			}
 		]
-    return states
+	return states
 
 def generate_disconnect_transition(source: str) -> dict:
-    disconnect_transition = {
-        "source": source,
-        "target": "disconnected",
+	disconnect_transition = {
+		"source": source,
+		"target": "disconnected",
 		"trigger": "disconnect"
-    }
-    return disconnect_transition
-    
+	}
+	return disconnect_transition
+	
 def generate_record_button_transition(source: str) -> dict:
-    record_button_transition = {
-        "source": source,
+	record_button_transition = {
+		"source": source,
 		"trigger": "record_button_press",
-        "target": "recording_message"
-    }
-    return record_button_transition
+		"target": "recording_message"
+	}
+	return record_button_transition
 
 def generate_back_button_transistion(source: str, target: str = "main") -> dict:
 	back_button_transition = {
@@ -80,12 +80,12 @@ def generate_back_button_transistion(source: str, target: str = "main") -> dict:
 	return back_button_transition
 
 def generate_playback_finished(source: str, target: str) -> dict:
-    playback_finished_transition = {
-        "source": source,
-        "trigger": "playback_finished",
-        "target": target,
-    }
-    return playback_finished_transition
+	playback_finished_transition = {
+		"source": source,
+		"trigger": "playback_finished",
+		"target": target,
+	}
+	return playback_finished_transition
 
 def get_transitions() -> list:
 	transitions = []

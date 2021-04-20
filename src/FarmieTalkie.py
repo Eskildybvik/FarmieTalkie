@@ -1,11 +1,11 @@
 import stmpy
 import FarmieTalkieStates
-    
+	
 class FarmieTalkie:
-    def __init__(self):
+	def __init__(self):
 		self.transitions = FarmieTalkieStates.get_transitions()
-        
-        # States done, check src/FarmieTalkieStates.py
+		
+		# States done, check src/FarmieTalkieStates.py
 		self.states = FarmieTalkieStates.get_states()
 
 		# auto-generate similar transitions
