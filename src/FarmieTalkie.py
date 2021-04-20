@@ -1,12 +1,16 @@
 import stmpy
 import FarmieTalkieStates
 import logging
-from GUIHandler import GUIHandler
+from GUIHandler import GUIHandler, Frame
 from MQTTClient import MQTTClient
 
 
 class FarmieTalkie:
 	def __init__(self):
+		# Will be set in the main function
+		self.gui = None
+		self.mqtt = None
+		
 		# transitions done, check src/FarmieTalkieStates.py
 		self.transitions = FarmieTalkieStates.get_transitions()
 		
@@ -45,19 +49,19 @@ class FarmieTalkie:
 
 	# GUI Handling
 	def show_add_menu(self):
-		pass
+		self.gui.view_frame(Frame.ADD_CHANNEL)
 	
 	def show_manage_menu(self):
-		pass
+		self.gui.view_frame(Frame.MANAGE_CHANNELS)
 	
 	def show_log(self):
-		pass
+		self.gui.view_frame(Frame.VIEW_LOG)
 
 	def display_channel_set(self):
-		pass
+		self.gui.view_frame(Frame.SELECT_CHANNEL)
 	
 	def show_main(self):
-		pass
+		self.gui.view_frame(Frame.MAIN)
 	
 
 
@@ -76,9 +80,10 @@ def main():
 	# self._logger.debug('Component initialization finished')
 	mqtt = MQTTClient(stm)
 	farmietalkie_machine.mqtt = mqtt
-	stm_driver.start(keep_active=True)
 	gui = GUIHandler(stm)
 	farmietalkie_machine.gui = gui
+	stm_driver.start(keep_active=True)
+	gui.start()
 
 
 if __name__ == "__main__":
