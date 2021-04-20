@@ -1,31 +1,73 @@
 import paho.mqtt.client as mqtt
 import stmpy
 import logging
-from threading import Thread
-import json
 
 
 MQTT_BROKER = 'vps.esdy.io'
 MQTT_PORT = 16805
 
-MQTT_TOPIC_INPUT = 'ttm4115/team_1/command'
-MQTT_TOPIC_OUTPUT = 'ttm4115/team_1/answer'
+MQTT_CHANNEL_PREFIX = "farmietalkie/message/"
+
+
+def generate_test_sound() -> bytearray: 
+	f = open("assets/testsound.wav", "rb")
+	test_file = f.read()
+	f.close()
+	byteArray = bytearray(test_file)
+	return byteArray
 
 
 class MQTTClient:
 
+	def __init__(self, stm: stmpy.Machine):
+		self._logger = logging.getLogger(__name__)
+		self.test_sound = generate_test_sound()
+		self.subscribed_channels = []
 
-	def on_connect(self, client, userdata, flags, rc):
-		pass
-	def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
-		pass
-	def __init__(self):
+		self.stm = stm
 		# create a new MQTT client
-		self._logger.debug('Connecting to MQTT broker {} at port {}'.format(MQTT_BROKER, MQTT_PORT))
+		self._logger.debug(f'Connecting to MQTT broker {MQTT_BROKER} at port {MQTT_PORT}')
 		self.mqtt_client = mqtt.Client()
 		# callback methods
 		self.mqtt_client.on_connect = self.on_connect
 		self.mqtt_client.on_message = self.on_message
+		self.mqtt_client.on_disconnect = self.on_disconnect
 
-	def stop(self):
-		pass
+		self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+		self.mqtt_client.loop_start()
+
+	# subscribe_stored_channels in diagram
+	def on_connect(self, client, userdata, flags, rc):
+		self._logger.debug("Connected to broker")
+		self.stm.send("connect")
+		for channel in self.subscribed_channels:
+			self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
+			
+	def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
+		payload = msg.payload
+		self._logger.debug(f"Received message on channel {msg.topic}")
+		if (msg.topic.startswith(MQTT_CHANNEL_PREFIX)):
+			self.stm.send("message", args=[payload])
+		
+		self._logger.debug(f"length of message: {len(payload)}")
+
+	def on_disconnect(self, client, userdata, rc):
+		self.stm.send("disconnect")
+
+	def add_channel(self, channel: str):
+		self.subscribed_channels.append(channel)
+		self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
+
+	def remove_channel(self, channel: str):
+		if channel in self.subscribed_channels:
+			self.subscribed_channels.remove(channel)
+			self.mqtt_client.unsubscribe(MQTT_CHANNEL_PREFIX + channel)
+	
+	# TODO: Decide what to send: bytesarray or base64 encoded bytesarray w/json. 
+	def send_message(self, channel: str, message: bytearray):
+		self._logger.debug(f"Sending message to channel {channel}...")
+		self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + channel, payload=message, qos=2)
+
+	
+
+		

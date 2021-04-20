@@ -36,7 +36,7 @@ def get_states():
 			},
 			{
 				"name": "play_message",
-				"entry": "play_notify_sound; play(msg)", # TODO: Unsure about syntax
+				# "entry": "play_notify_sound; play(msg)", # TODO: Unsure about syntax
 				"disconnect": "defer",
 				"message": "defer"
 			},
@@ -48,7 +48,7 @@ def get_states():
 			},
 			{
 				"name": "replay_message",
-				"entry": "play(msg)", # TODO: Unsure about syntax
+				# "entry": "play(msg)", # TODO: Unsure about syntax
 				"disconnect": "defer",
 				"message": "defer"
 			}
@@ -121,8 +121,7 @@ def get_transitions() -> list:
 	transitions.append({
 		"source": "disconnected",
 		"target": "main",
-		"trigger": "connected",
-		"effect": "subscribe_stored_channels"
+		"trigger": "connect"
 	})
 	transitions.append({
 		"source": "main",
@@ -153,8 +152,8 @@ def get_transitions() -> list:
 	transitions.append({
 		"source": "add_channel",
 		"target": "manage_channels",
-		"trigger": "confirm_button",
-		"effect": "subscribe(channel)" # TODO: unsure of syntax
+		"trigger": "confirm_button"
+		# "effect": "subscribe(channel)" # TODO: unsure of syntax
 	})
 	transitions.append({
 		"source": "main",
