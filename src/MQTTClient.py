@@ -18,6 +18,8 @@ def generate_test_sound() -> bytearray:
 
 
 class MQTTClient:
+
+	# subscribe_stored_channels in diagram
 	def on_connect(self, client, userdata, flags, rc):
 		self._logger.debug("Connected to broker")
 		self.stm.send("connect")
