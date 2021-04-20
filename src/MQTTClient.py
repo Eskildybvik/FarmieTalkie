@@ -16,11 +16,11 @@ class MQTTClient:
 
 
 	def on_connect(self, client, userdata, flags, rc):
-        pass
+		pass
 	def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
-        pass
+		pass
 	def __init__(self):
-        # create a new MQTT client
+		# create a new MQTT client
 		self._logger.debug('Connecting to MQTT broker {} at port {}'.format(MQTT_BROKER, MQTT_PORT))
 		self.mqtt_client = mqtt.Client()
 		# callback methods
@@ -28,4 +28,4 @@ class MQTTClient:
 		self.mqtt_client.on_message = self.on_message
 
 	def stop(self):
-        pass
+		pass
