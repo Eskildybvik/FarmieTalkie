@@ -23,6 +23,7 @@ class MQTTClient:
 		self._logger = logging.getLogger(__name__)
 		self.test_sound = generate_test_sound()
 		self.subscribed_channels = []
+		self.selected_channel = ""
 
 		self.stm = stm
 		# create a new MQTT client
@@ -55,8 +56,11 @@ class MQTTClient:
 		self.stm.send("disconnect")
 
 	def add_channel(self, channel: str):
+		if channel in self.subscribed_channels:
+			return
 		self.subscribed_channels.append(channel)
 		self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
+		self.subscribed_channels.sort()
 
 	def remove_channel(self, channel: str):
 		if channel in self.subscribed_channels:
@@ -64,7 +68,7 @@ class MQTTClient:
 			self.mqtt_client.unsubscribe(MQTT_CHANNEL_PREFIX + channel)
 	
 	# TODO: Decide what to send: bytesarray or base64 encoded bytesarray w/json. 
-	def send_message(self, channel: str, message: bytearray):
+	def send_message(self, message: bytearray):
 		self._logger.debug(f"Sending message to channel {channel}...")
 		self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + channel, payload=message, qos=2)
 

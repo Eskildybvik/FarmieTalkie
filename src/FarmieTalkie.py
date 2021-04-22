@@ -33,8 +33,10 @@ class FarmieTalkie:
 		sa.WaveObject.from_wave_file("./assets/notification.wav").play()
 	
 	# Play the enqueued message.
-	def play(self):
-		pass
+	def play(self, message: bytearray):
+		with open("temp.wav", "wb") as temp:
+			temp.write(message)
+		sa.WaveObject.from_wave_file("temp.wav").play()
 	
 	def start_recording(self):
 		pass
@@ -97,7 +99,7 @@ def main():
 	# self._logger.debug('Component initialization finished')
 	mqtt = MQTTClient(stm)
 	farmietalkie_machine.mqtt = mqtt
-	gui = GUIHandler(stm)
+	gui = GUIHandler(stm, mqtt)
 	farmietalkie_machine.gui = gui
 	stm_driver.start(keep_active=True)
 	gui.start()
