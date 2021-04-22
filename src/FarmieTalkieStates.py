@@ -16,12 +16,12 @@ def get_states():
 			},
 			{
 				"name": "recording_message",
-				"entry": "start_recording",
+				"entry": "start_recording; display_recording",
 				"message": "defer"
 			},
 			{
 				"name": "sending_message",
-				"entry": "send_message",
+				"entry": "send_message; display_sending",
 				"message": "defer"
 			},
 			{

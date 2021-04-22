@@ -68,6 +68,9 @@ class MQTTClient:
 		self._logger.debug(f"Sending message to channel {channel}...")
 		self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + channel, payload=message, qos=2)
 
+	def destroy(self):
+		self.mqtt_client.disconnect()
+
 	
 
 		

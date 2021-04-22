@@ -29,9 +29,15 @@ class GUIHandler():
 		self.app.startFrameStack("DISPLAY", start=Frame.MAIN)
 		self.frame_init()
 		self.app.stopFrameStack()
+		self.app.startFrame("HARDWARE", row=1)
+		self.app.addButtons(["RECORD", "BACK"], lambda btn: self.press(btn))
+		self.app.stopFrame()
 	
 	def start(self):
 		self.app.go()
+	
+	def destroy(self):
+		self.app.stop()
 	
 	def view_frame(self, frame: Frame):
 		self.app.selectFrame("DISPLAY", frame)
@@ -39,6 +45,7 @@ class GUIHandler():
 	def frame_init(self):
 		self.create_main_frame()
 		self.create_select_channel_frame()
+		self.create_recording_frame()
 		self.create_sending_message_frame()
 		self.create_manage_channels_frame()
 		self.create_add_channel_frame()
@@ -48,37 +55,47 @@ class GUIHandler():
 
 	def create_main_frame(self):
 		self.app.startFrame("BUTTONS", row=5, column=0)
-		self.app.addButtons(["RECORD", "BACK"], lambda btn: self.press(btn))
+		self.app.addLabel(Frame.MAIN.name)
+		self.app.addButton("Select channel", lambda btn: self.stm.send("select_button"))
+		self.app.addButton("Manage channels", lambda btn: self.stm.send("manage_button"))
+		self.app.addButton("View log", lambda btn: self.stm.send("view_log_button"))
 		self.app.stopFrame()
 
 	def create_select_channel_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.SELECT_CHANNEL.name)
+		self.app.stopFrame()
+
+	def create_recording_frame(self):
+		self.app.startFrame()
+		self.app.addLabel(Frame.RECORDING_MESSAGE.name)
 		self.app.stopFrame()
 
 	def create_sending_message_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.SENDING_MESSAGE.name)
 		self.app.stopFrame()
 
 	def create_manage_channels_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.MANAGE_CHANNELS.name)
+		self.app.addButton("Add channel", lambda btn: self.stm.send("add_button"))
 		self.app.stopFrame()
 
 	def create_add_channel_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.ADD_CHANNEL.name)
 		self.app.stopFrame()
 
+	# TODO: Missing showing recordings
 	def create_view_log_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.VIEW_LOG.name)
 		self.app.stopFrame()
 
 	def create_playing_message_frame(self):
 		self.app.startFrame()
-		
+		self.app.addLabel(Frame.PLAYING_MESSAGE.name)
 		self.app.stopFrame()
 
 

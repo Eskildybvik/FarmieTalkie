@@ -1,15 +1,21 @@
 import stmpy
 import FarmieTalkieStates
 import logging
+from signal import signal, SIGINT
 from GUIHandler import GUIHandler, Frame
 from MQTTClient import MQTTClient
+# from AudioManager import AudioManager
+import simpleaudio as sa
 
 
 class FarmieTalkie:
 	def __init__(self):
+		self._logger = logging.getLogger(__name__)
 		# Will be set in the main function
 		self.gui = None
 		self.mqtt = None
+
+		# self.audio_manager = AudioManager()
 		
 		# transitions done, check src/FarmieTalkieStates.py
 		self.transitions = FarmieTalkieStates.get_transitions()
@@ -20,11 +26,11 @@ class FarmieTalkie:
 	# Media handling
 	# Upon message play successful connection.
 	def play_confirmation_sound(self):
-		pass
+		sa.WaveObject.from_wave_file("./assets/confirmation.wav").play()
 
 	# Play a notification sound upon receiving a message.
 	def play_notify_sound(self):
-		pass
+		sa.WaveObject.from_wave_file("./assets/notification.wav").play()
 	
 	# Play the enqueued message.
 	def play(self):
@@ -60,16 +66,27 @@ class FarmieTalkie:
 	def display_channel_set(self):
 		self.gui.view_frame(Frame.SELECT_CHANNEL)
 	
+	def display_sending(self):
+		self.gui.view_frame(Frame.SENDING_MESSAGE)
+
+	def display_recording(self):
+		self.gui.view_frame(Frame.RECORDING_MESSAGE)
+
 	def show_main(self):
 		self.gui.view_frame(Frame.MAIN)
 	
-
+	def destroy(self):
+		self.mqtt.destroy()
+		self.gui.destroy()
+		self.audio_manager.destroy()
+		
 
 		
 def main():
 	logging.basicConfig(level=logging.DEBUG)
 	stm_driver = stmpy.Driver()
 	farmietalkie_machine = FarmieTalkie()
+	signal(SIGINT, lambda a,b: farmietalkie_machine.destroy())
 	stm = stmpy.Machine(
 		"FarmieTalkie",
 		farmietalkie_machine.transitions,
