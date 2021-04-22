@@ -2,6 +2,7 @@ from appJar import gui
 import stmpy
 import logging
 from enum import IntEnum
+from MQTTClient import MQTTClient
 
 class Frame(IntEnum):
 	MAIN = 0
@@ -22,9 +23,10 @@ class GUIHandler():
 		elif button == "BACK":
 			self.stm.send("back_button_press")
 
-	def __init__(self, stm: stmpy.Machine):
+	def __init__(self, stm: stmpy.Machine, mqtt: MQTTClient):
 		self._logger = logging.getLogger(__name__)
 		self.stm = stm
+		self.mqtt = mqtt
 		self.app = gui("FarmieTalkie", "320x480")
 		self.app.startFrameStack("DISPLAY", start=Frame.MAIN)
 		self.frame_init()
@@ -40,6 +42,8 @@ class GUIHandler():
 		self.app.stop()
 	
 	def view_frame(self, frame: Frame):
+		if frame == Frame.MANAGE_CHANNELS:
+			self.app.updateListBox("Subscribed channels", self.mqtt.subscribed_channels)
 		self.app.selectFrame("DISPLAY", frame)
 	
 	def frame_init(self):
@@ -62,8 +66,14 @@ class GUIHandler():
 		self.app.stopFrame()
 
 	def create_select_channel_frame(self):
+		entryTitle = "Selected channel name"
 		self.app.startFrame()
 		self.app.addLabel(Frame.SELECT_CHANNEL.name)
+		self.app.addLabelEntry(entryTitle)
+		def select_channel_callback(btn: str):
+			self.mqtt.selected_channel = self.app.getEntry(entryTitle)
+			self.stm.send("back_button_press")
+		self.app.addButton("Confirm channel", select_channel_callback)
 		self.app.stopFrame()
 
 	def create_recording_frame(self):
@@ -79,12 +89,20 @@ class GUIHandler():
 	def create_manage_channels_frame(self):
 		self.app.startFrame()
 		self.app.addLabel(Frame.MANAGE_CHANNELS.name)
+		self.app.addListBox("Subscribed channels", self.mqtt.subscribed_channels)
+		# self.app.addLabelEntry("Channel Name")
 		self.app.addButton("Add channel", lambda btn: self.stm.send("add_button"))
 		self.app.stopFrame()
 
 	def create_add_channel_frame(self):
 		self.app.startFrame()
 		self.app.addLabel(Frame.ADD_CHANNEL.name)
+		entryTitle = "Add channel"
+		self.app.addLabelEntry(entryTitle)
+		def select_channel_callback(btn: str):
+			self.mqtt.add_channel(self.app.getEntry(entryTitle))
+			self.stm.send("confirm_button")
+		self.app.addButton("Confirm channel to add", select_channel_callback)
 		self.app.stopFrame()
 
 	# TODO: Missing showing recordings
@@ -99,6 +117,3 @@ class GUIHandler():
 		self.app.stopFrame()
 
 
-
-# http://appjar.info/simpleAppJar/
-# app.addButtons(["Submit", "Cancel"], press)
