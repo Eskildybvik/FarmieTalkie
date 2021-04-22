@@ -36,6 +36,9 @@ class GUIHandler():
 	def start(self):
 		self.app.go()
 	
+	def destroy(self):
+		self.app.stop()
+	
 	def view_frame(self, frame: Frame):
 		self.app.selectFrame("DISPLAY", frame)
 	
