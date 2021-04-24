@@ -3,8 +3,8 @@ import queue
 import threading
 import sounddevice as sd
 import soundfile as sf
-import numpy
-assert numpy
+import numpy # Needs to be loaded for sounddevice to work correctly
+assert numpy # Prevents "not used" warning
 
 
 class RecordingManager:

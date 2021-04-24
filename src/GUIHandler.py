@@ -4,7 +4,10 @@ import logging
 from enum import IntEnum
 from MQTTClient import MQTTClient
 
+
 class Frame(IntEnum):
+	"""Used to make it simple to change "scene" in the GUI"""
+
 	MAIN = 0
 	SELECT_CHANNEL = 1
 	RECORDING_MESSAGE = 2
@@ -42,7 +45,7 @@ class GUIHandler():
 		self.__mqtt = mqtt
 		self.__app = gui("FarmieTalkie", "320x480")
 		self.__app.startFrameStack("DISPLAY", start=Frame.MAIN)
-		self._frame_init()
+		self.__frame_init()
 		self.__app.stopFrameStack()
 
 		# "Hardware" buttons
@@ -67,18 +70,18 @@ class GUIHandler():
 			self.__app.updateListBox("Subscribed channels", self.__mqtt.subscribed_channels)
 		self.__app.selectFrame("DISPLAY", frame)
 	
-	def _frame_init(self):
-		self._create_main_frame()
-		self._create_select_channel_frame()
-		self._create_recording_frame()
-		self._create_sending_message_frame()
-		self._create_manage_channels_frame()
-		self._create_add_channel_frame()
-		self._create_view_log_frame()
-		self._create_playing_message_frame()
+	def __frame_init(self):
+		self.__create_main_frame()
+		self.__create_select_channel_frame()
+		self.__create_recording_frame()
+		self.__create_sending_message_frame()
+		self.__create_manage_channels_frame()
+		self.__create_add_channel_frame()
+		self.__create_view_log_frame()
+		self.__create_playing_message_frame()
 
 
-	def _create_main_frame(self):
+	def __create_main_frame(self):
 		self.__app.startFrame("BUTTONS", row=5, column=0)
 		self.__app.addLabel(Frame.MAIN.name)
 		self.__app.addButton("Select channel", lambda btn: self.__stm.send("select_button"))
@@ -86,7 +89,7 @@ class GUIHandler():
 		self.__app.addButton("View log", lambda btn: self.__stm.send("view_log_button"))
 		self.__app.stopFrame()
 
-	def _create_select_channel_frame(self):
+	def __create_select_channel_frame(self):
 		entryTitle = "Selected channel name"
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.SELECT_CHANNEL.name)
@@ -97,24 +100,24 @@ class GUIHandler():
 		self.__app.addButton("Confirm channel", select_channel_callback)
 		self.__app.stopFrame()
 
-	def _create_recording_frame(self):
+	def __create_recording_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.RECORDING_MESSAGE.name)
 		self.__app.stopFrame()
 
-	def _create_sending_message_frame(self):
+	def __create_sending_message_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.SENDING_MESSAGE.name)
 		self.__app.stopFrame()
 
-	def _create_manage_channels_frame(self):
+	def __create_manage_channels_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.MANAGE_CHANNELS.name)
 		self.__app.addListBox("Subscribed channels", self.__mqtt.subscribed_channels)
 		self.__app.addButton("Add channel", lambda btn: self.__stm.send("add_button"))
 		self.__app.stopFrame()
 
-	def _create_add_channel_frame(self):
+	def __create_add_channel_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.ADD_CHANNEL.name)
 		entryTitle = "Add channel"
@@ -126,14 +129,12 @@ class GUIHandler():
 		self.__app.stopFrame()
 
 	# TODO: Missing showing recordings
-	def _create_view_log_frame(self):
+	def __create_view_log_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.VIEW_LOG.name)
 		self.__app.stopFrame()
 
-	def _create_playing_message_frame(self):
+	def __create_playing_message_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.PLAYING_MESSAGE.name, text="Playing incoming message...")
 		self.__app.stopFrame()
-
-
