@@ -21,7 +21,7 @@ class FarmieTalkie:
 		self.__stm = None
 		self.__message_player = None
 		self.__message_manager = MessageManager()
-		self.__cached_messages = []
+		self.__cached_messages = self.__message_manager.get_current_message_names()
 		
 		# Needs to be public to give the driver access
 		self.transitions = FarmieTalkieStates.get_transitions()
@@ -67,6 +67,12 @@ class FarmieTalkie:
 		self.__message_player.on_finish = lambda: self.__stm.send("playback_finished")
 		self.__message_player.play()
 	
+	def replay(self, message: str):
+		self.__logger.debug(f"Replaying {message}")
+		self.__message_player = PlaybackManager(message)
+		self.__message_player.on_finish = lambda: self.__stm.send("playback_finished")
+		self.__message_player.play()
+
 	def stop_playing(self):
 		if self.__message_player:
 			# Need to use stop_no_callback to prevent skipping the next message in the queue
@@ -106,6 +112,7 @@ class FarmieTalkie:
 		self.gui.view_frame(Frame.MANAGE_CHANNELS)
 	
 	def show_log(self):
+		self.gui.log_filenames = self.__cached_messages
 		self.gui.view_frame(Frame.VIEW_LOG)
 
 	def display_channel_set(self):

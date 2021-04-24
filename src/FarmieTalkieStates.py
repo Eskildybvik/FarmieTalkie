@@ -51,6 +51,7 @@ def get_states() -> List[dict]:
 			{
 				"name": "replay_message",
 				"disconnect": "defer",
+				"exit": "stop_playing",
 				"message": "defer"
 			}
 		]
@@ -170,7 +171,8 @@ def get_transitions() -> List[dict]:
 	transitions.append({
 		"source": "view_log",
 		"target": "replay_message",
-		"trigger": "message_clicked"
+		"trigger": "select_message",
+		"effect": "replay(*)"
 	})
 	transitions.append({
 		"source": "replay_message",

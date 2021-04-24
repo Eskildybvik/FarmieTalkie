@@ -19,7 +19,13 @@ class Frame(IntEnum):
 
 
 class GUIHandler():
-	"""Class for creating and running the graphical user interface."""
+	"""Class for creating and running the graphical user interface.
+	
+	Fields
+	------
+	log_filenames : List[str]
+		Filenames to display in the log
+	"""
 
 	def __press(self, button: str):
 		self.__logger.debug(f"Button pressed: {button}")
@@ -45,6 +51,7 @@ class GUIHandler():
 		self.__mqtt = mqtt
 		self.__app = gui("FarmieTalkie", "320x480")
 		self.__app.startFrameStack("DISPLAY", start=Frame.MAIN)
+		self.log_filenames = []
 		self.__frame_init()
 		self.__app.stopFrameStack()
 
@@ -70,6 +77,8 @@ class GUIHandler():
 
 		if frame == Frame.MANAGE_CHANNELS:
 			self.__app.updateListBox("Subscribed channels", self.__mqtt.subscribed_channels)
+		if frame == Frame.VIEW_LOG:
+			self.__app.updateListBox("Message log", self.log_filenames)
 		self.__app.selectFrame("DISPLAY", frame)
 		self.__logger.debug(f"Switched to frame {frame.name}")
 	
@@ -136,10 +145,16 @@ class GUIHandler():
 		self.__app.addButton("Confirm channel to add", select_channel_callback)
 		self.__app.stopFrame()
 
-	# TODO: Missing showing recordings
 	def __create_view_log_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.VIEW_LOG.name)
+		self.__app.addLabel(Frame.VIEW_LOG.name, text="Message log")
+		self.__app.addListBox("Message log", self.log_filenames)
+		def replay_callback(stm: str):
+			selected = self.__app.getListBox("Message log")
+			if len(selected) < 1:
+				return
+			self.__stm.send("select_message", args=[selected[0]])
+		self.__app.addButton("Replay message", replay_callback)
 		self.__app.stopFrame()
 
 	def __create_playing_message_frame(self):
