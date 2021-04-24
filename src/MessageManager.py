@@ -2,6 +2,7 @@ import logging
 import os
 from os import listdir
 from os.path import isfile, join
+from typing import List
 import re
 import math
 
@@ -10,7 +11,7 @@ def create_folder(folder_name: str):
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-def get_file_names(path: str) -> list[str]:
+def get_file_names(path: str) -> List[str]:
     onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
     return onlyfiles
 
@@ -22,14 +23,14 @@ class MessageManager:
     MESSAGE_LIMIT = 10
     FILE_NAME_PATTERN_STRING = "\d+\.ogg$"
     FILE_NAME_PATTERN = re.compile(FILE_NAME_PATTERN_STRING)
-    FILE_NUMBER_PATTERN_STRING = "(\d)+\."
+    FILE_NUMBER_PATTERN_STRING = "(\d+)\."
     FILE_NUMBER_PATTERN = re.compile(FILE_NUMBER_PATTERN_STRING)
      
     def __init__(self):
         self.__logger = logging.getLogger(__name__)
         create_folder(self.FOLDER_NAME)
 
-    def get_current_messages(self) -> list[bytearray]:
+    def get_current_messages(self) -> List[bytearray]:
         """ This method loads all the messages from the path into memory. 
         
         Path is standard './messages". This method should be called anew 
@@ -47,6 +48,16 @@ class MessageManager:
                 files.append(file)
 
         return files
+    
+    def get_current_message_names(self) -> List[str]:
+        """ This method loads the name of all saved messages.
+        
+        Path is standard './messages". This method should be called anew 
+        every time a new message is added so that the data is never stale. 
+        """
+        file_names = get_file_names(self.PATH)
+        clean_file_names = self.clean_file_names(file_names)
+        return [f"{self.PATH}/{n}" for n in clean_file_names]
 
     def message_amount_within_limit(self, file_names: list) -> bool:
         amount = len(file_names)
@@ -86,11 +97,11 @@ class MessageManager:
         current_amount = len(clean_file_names)
 
         if current_amount <= 0:
-            return f"{self.PATH}/0.wav"
+            return f"{self.PATH}/0.ogg"
 
         last_number = self.find_largest_number(clean_file_names)
         new_last_item_number = last_number + 1
-        new_last_item_file_name = f"{self.PATH}/{new_last_item_number}.wav"
+        new_last_item_file_name = f"{self.PATH}/{new_last_item_number}.ogg"
         
         return new_last_item_file_name
 
@@ -100,13 +111,14 @@ class MessageManager:
 
     def clean_file_names(self, file_names):
         names = [x for x in file_names if self.FILE_NAME_PATTERN.match(x)]
+        names.sort(key=(lambda x: int(self.FILE_NUMBER_PATTERN.findall(x)[0])))
         return names
 
     def new_message(self, message: bytearray):
         """ Saves message to persistent storage. If the new message 
         increases the total count above the limit, then the message 
         with lowest count (effectivly the oldest message) is deleted. 
-        The new message will be named like: "x.wav" where x is a number. 
+        The new message will be named like: "x.ogg" where x is a number. 
         This number is found by finding the message with the largest 
         number and then increment it by one. 
 
@@ -128,7 +140,7 @@ class MessageManager:
 
         else:
             first_file_name = self.find_smallest_number(clean_file_names)
-            first_file_path = f"{self.PATH}/{first_file_name}.wav"  
+            first_file_path = f"{self.PATH}/{first_file_name}.ogg"  
             new_last_item_file_name = self.new_message_name(clean_file_names)
             self.__logger.debug(f"Is not within limit and new: {new_last_item_file_name}, remove: {first_file_path}")
 

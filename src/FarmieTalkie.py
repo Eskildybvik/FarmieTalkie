@@ -10,6 +10,7 @@ from GUIHandler import GUIHandler, Frame
 from MQTTClient import MQTTClient
 from RecordingManager import RecordingManager
 from PlaybackManager import PlaybackManager
+from MessageManager import MessageManager
 
 
 class FarmieTalkie:
@@ -19,6 +20,8 @@ class FarmieTalkie:
 		self.__logger = logging.getLogger(__name__)
 		self.__stm = None
 		self.__message_player = None
+		self.__message_manager = MessageManager()
+		self.__cached_messages = []
 		
 		# Needs to be public to give the driver access
 		self.transitions = FarmieTalkieStates.get_transitions()
@@ -26,8 +29,8 @@ class FarmieTalkie:
 
 		self.recording_manager = RecordingManager()
 		# Pre-load the two sound effects used
-		self.notification_player = PlaybackManager("./assets/notification.wav")
-		self.confirmation_player = PlaybackManager("./assets/confirmation.wav")
+		self.notification_player = PlaybackManager("./assets/notification.ogg")
+		self.confirmation_player = PlaybackManager("./assets/confirmation.ogg")
 	
 	# Needed for the setter to work
 	@property
@@ -58,9 +61,9 @@ class FarmieTalkie:
 	# Play the enqueued message.
 	def play(self, message: bytearray):
 		self.__logger.debug("Received voice message")
-		with open("temp.ogg", "wb") as file:
-			file.write(message)
-		self.__message_player = PlaybackManager("temp.ogg")
+		self.__message_manager.new_message(message)
+		self.__cached_messages = self.__message_manager.get_current_message_names()
+		self.__message_player = PlaybackManager(self.__cached_messages[-1])
 		self.__message_player.on_finish = lambda: self.__stm.send("playback_finished")
 		self.__message_player.play()
 	
