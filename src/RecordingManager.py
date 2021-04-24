@@ -16,7 +16,7 @@ class RecordingManager:
 	"""
 
 	SAMPLE_RATE = 44100
-	TEMP_FILE_NAME = "recording_temp.wav"
+	TEMP_FILE_NAME = "recording_temp.ogg"
 
 	def __init__(self):
 		self.__logger = logging.getLogger(__name__)

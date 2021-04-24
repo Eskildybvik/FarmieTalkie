@@ -19,7 +19,7 @@ class MessageManager:
     FOLDER_NAME = "messages"
     PATH = f"./{FOLDER_NAME}"
     MESSAGE_LIMIT = 10
-    FILE_NAME_PATTERN_STRING = "\d+\.wav$"
+    FILE_NAME_PATTERN_STRING = "\d+\.ogg$"
     FILE_NAME_PATTERN = re.compile(FILE_NAME_PATTERN_STRING)
     FILE_NUMBER_PATTERN_STRING = "(\d)+\."
     FILE_NUMBER_PATTERN = re.compile(FILE_NUMBER_PATTERN_STRING)
@@ -101,9 +101,15 @@ class MessageManager:
         return names
 
     def new_message(self, message: bytearray):
-        """ Saves message to persistent storage. If the new message increases the total count above the limit, then the message with lowest count (effectivly the oldest message) is deleted. The new message will be named like: "x.wav" where x is a number. This number is found by finding the message with the largest number and then increment it by one. 
+        """ Saves message to persistent storage. If the new message 
+        increases the total count above the limit, then the message 
+        with lowest count (effectivly the oldest message) is deleted. 
+        The new message will be named like: "x.wav" where x is a number. 
+        This number is found by finding the message with the largest 
+        number and then increment it by one. 
 
-        Eg. if the file with filename "36.wav" is the number which is largest, then the new message will be called "37.wav". 
+        Eg. if the file with filename "36.ogg" is the number which is 
+        largest, then the new message will be called "37.ogg". 
 
         Limit is 9223372036854775807. 
         """

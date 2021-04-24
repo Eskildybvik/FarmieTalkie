@@ -54,9 +54,9 @@ class FarmieTalkie:
 	
 	# Play the enqueued message.
 	def play(self, message: bytearray):
-		with open("temp.wav", "wb") as file:
+		with open("temp.ogg", "wb") as file:
 			file.write(message)
-		player = PlaybackManager("temp.wav")
+		player = PlaybackManager("temp.ogg")
 		player.on_finish = lambda: self.__stm.send("playback_finished")
 		player.play()
 
