@@ -16,6 +16,8 @@ class Frame(IntEnum):
 
 
 class GUIHandler():
+	"""Class for creating and running the graphical user interface."""
+
 	def press(self, button: str):
 		self._logger.debug(f"Button pressed: {button}")
 		if button == "RECORD":
@@ -26,6 +28,15 @@ class GUIHandler():
 			self._stm.send("record_button_release")
 
 	def __init__(self, stm: stmpy.Machine, mqtt: MQTTClient):
+		"""
+		Parameters
+		----------
+		stm : stmpy.Machine
+			A reference to the state machine this belongs to
+		mqtt : MQTTClient
+			A reference to the MQTT client of the program
+		"""
+
 		self._logger = logging.getLogger(__name__)
 		self._stm = stm
 		self._mqtt = mqtt
@@ -33,17 +44,25 @@ class GUIHandler():
 		self._app.startFrameStack("DISPLAY", start=Frame.MAIN)
 		self._frame_init()
 		self._app.stopFrameStack()
+
+		# "Hardware" buttons
 		self._app.startFrame("HARDWARE", row=1)
 		self._app.addButtons(["RECORD", "BACK", "STOP_RECORD"], lambda btn: self.press(btn))
 		self._app.stopFrame()
 	
 	def start(self):
+		"""Start the GUI"""
+
 		self._app.go()
 	
 	def destroy(self):
+		"""Destructor of the GUI. Closes the program"""
+
 		self._app.stop()
 	
 	def view_frame(self, frame: Frame):
+		"""Go to a specific "scene" of the GUI"""
+
 		if frame == Frame.MANAGE_CHANNELS:
 			self._app.updateListBox("Subscribed channels", self._mqtt.subscribed_channels)
 		self._app.selectFrame("DISPLAY", frame)

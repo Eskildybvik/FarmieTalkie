@@ -14,6 +14,8 @@ def get_file_names(path: str) -> list[str]:
     return onlyfiles
 
 class MessageManager:
+    """Class for helping keep track of the 10 messages in the log."""
+    
     FOLDER_NAME = "messages"
     PATH = f"./{FOLDER_NAME}"
     MESSAGE_LIMIT = 10
@@ -26,8 +28,12 @@ class MessageManager:
         create_folder(self.FOLDER_NAME)
 
     def get_current_messages(self) -> list[bytearray]:
-        """ This method loads all the messages from the path into memory. Path is standard './messages". This method should be called anew every time a new message is added so that the data is never stale. 
+        """ This method loads all the messages from the path into memory. 
+        
+        Path is standard './messages". This method should be called anew 
+        every time a new message is added so that the data is never stale. 
         """
+
         file_names = get_file_names(self.PATH)
         clean_file_names = self.clean_file_names(file_names)
         files = []
@@ -101,6 +107,7 @@ class MessageManager:
 
         Limit is 9223372036854775807. 
         """
+        
         file_names = get_file_names(self.PATH)
         clean_file_names = self.clean_file_names(file_names)
         is_within_limit = self.message_amount_within_limit(clean_file_names)

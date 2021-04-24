@@ -12,6 +12,8 @@ from PlaybackManager import PlaybackManager
 
 
 class FarmieTalkie:
+	"""Main class of the FarmieTalkie system. Keeps everything together."""
+
 	def __init__(self):
 		self._logger = logging.getLogger(__name__)
 		self._stm = None
@@ -128,8 +130,6 @@ def main():
 	farmietalkie_machine.stm = stm
 	stm_driver.start(keep_active=True)
 	farmietalkie_machine.start()
-
-
 
 if __name__ == "__main__":
 	main()

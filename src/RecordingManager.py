@@ -8,6 +8,13 @@ assert numpy
 
 
 class RecordingManager:
+	"""Helper class for recording audio files.
+	
+	The recording process is ran in a separate thread.
+	Saves the recording to a fixed file, whose path can be retrieved using 
+	get_recording()
+	"""
+
 	SAMPLE_RATE = 44100
 	TEMP_FILE_NAME = "recording_temp.wav"
 
@@ -16,6 +23,7 @@ class RecordingManager:
 		self._buffer = queue.Queue()
 
 	def start_recording(self):
+		"""Begin recording audio from the default microphone"""
 		self.recording = True
 		recording_thread = threading.Thread(target=self._thread_function)
 		recording_thread.start()
@@ -31,9 +39,11 @@ class RecordingManager:
 		self._logger.debug("Recording finished")
 	
 	def stop_recording(self):
+		"""Stop recording. Does nothing if no recording is in progress"""
 		self.recording = False
 
 	def get_recording(self) -> str:
+		"""Get path of the recorded wav file"""
 		return self.TEMP_FILE_NAME
 
 	def callback(self, indata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
