@@ -40,6 +40,7 @@ class PlaybackManager:
 			finished_callback=self.__on_finish_internal
 		)
 		self.__stream.start()
+		self.__logger.debug(f"Playing audio file {self.filename}")
 	
 	def reset(self):
 		"""Reset the player (for re-using the audio file)"""
@@ -59,6 +60,7 @@ class PlaybackManager:
 		self.__current_frame += chunksize
 	
 	def __on_finish_internal(self):
+		self.__logger.debug(f"Playback of {self.filename} finished")
 		self.__stream.stop()
 		self.__stream.close()
 		if self.on_finish:

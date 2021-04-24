@@ -94,9 +94,11 @@ class MQTTClient:
 		self.__logger.debug(f"Sending message to channel {self.selected_channel}...")
 		sent_message = self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + self.selected_channel, payload=message, qos=2)
 		sent_message.wait_for_publish()
+		self.__logger.debug("Message sent")
 		self.__stm.send("message_sent")
 
 	def destroy(self):
 		"""Destructor for this class. Disconnects from MQTT"""
 
 		self.mqtt_client.disconnect()
+		self.__logger.debug("MQTT disconnected and destroyed")

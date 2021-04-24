@@ -24,6 +24,7 @@ class RecordingManager:
 
 	def start_recording(self):
 		"""Begin recording audio from the default microphone"""
+
 		self.recording = True
 		recording_thread = threading.Thread(target=self.__thread_function)
 		recording_thread.start()
@@ -40,10 +41,12 @@ class RecordingManager:
 	
 	def stop_recording(self):
 		"""Stop recording. Does nothing if no recording is in progress"""
+
 		self.recording = False
 
 	def get_recording(self) -> str:
 		"""Get path of the recorded wav file"""
+		
 		return self.TEMP_FILE_NAME
 
 	def __callback(self, indata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):

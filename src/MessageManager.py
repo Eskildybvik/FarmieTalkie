@@ -1,3 +1,4 @@
+import logging
 import os
 from os import listdir
 from os.path import isfile, join
@@ -25,6 +26,7 @@ class MessageManager:
     FILE_NUMBER_PATTERN = re.compile(FILE_NUMBER_PATTERN_STRING)
      
     def __init__(self):
+        self.__logger = logging.getLogger(__name__)
         create_folder(self.FOLDER_NAME)
 
     def get_current_messages(self) -> list[bytearray]:
@@ -128,7 +130,7 @@ class MessageManager:
             first_file_name = self.find_smallest_number(clean_file_names)
             first_file_path = f"{self.PATH}/{first_file_name}.wav"  
             new_last_item_file_name = self.new_message_name(clean_file_names)
-            print(f"Is not within limit and new: {new_last_item_file_name}, remove: {first_file_path}")
+            self.__logger.debug(f"Is not within limit and new: {new_last_item_file_name}, remove: {first_file_path}")
 
             os.remove(first_file_path)
             self.write_message(new_last_item_file_name, message)

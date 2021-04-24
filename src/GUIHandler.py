@@ -57,11 +57,13 @@ class GUIHandler():
 		"""Start the GUI"""
 
 		self.__app.go()
+		self.__logger.debug("GUI Started")
 	
 	def destroy(self):
 		"""Destructor of the GUI. Closes the program"""
 
 		self.__app.stop()
+		self.__logger.debug("GUI Stopped")
 	
 	def view_frame(self, frame: Frame):
 		"""Go to a specific "scene" of the GUI"""
@@ -69,6 +71,7 @@ class GUIHandler():
 		if frame == Frame.MANAGE_CHANNELS:
 			self.__app.updateListBox("Subscribed channels", self.__mqtt.subscribed_channels)
 		self.__app.selectFrame("DISPLAY", frame)
+		self.__logger.debug(f"Switched to frame {frame.name}")
 	
 	def __frame_init(self):
 		self.__create_main_frame()

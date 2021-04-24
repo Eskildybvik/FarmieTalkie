@@ -40,6 +40,7 @@ class FarmieTalkie:
 
 	def start(self):
 		self.gui.start()
+		self.__logger.debug("FarmieTalkie has been started!")
 	
 	# Media handling
 	# Upon message play successful connection.
@@ -54,6 +55,7 @@ class FarmieTalkie:
 	
 	# Play the enqueued message.
 	def play(self, message: bytearray):
+		self.__logger.debug("Received voice message")
 		with open("temp.ogg", "wb") as file:
 			file.write(message)
 		player = PlaybackManager("temp.ogg")
