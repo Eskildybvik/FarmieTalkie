@@ -2,6 +2,7 @@ import logging
 import threading
 import sounddevice as sd
 import soundfile as sf
+from time import sleep
 import numpy # Needs to be loaded for sounddevice to work correctly
 assert numpy # Prevents "not used" warning
 
@@ -29,6 +30,7 @@ class PlaybackManager:
 		self.__filename = filename
 		self.__stream = None
 		self.__current_frame = 0
+		self.__finish_called = False
 		self.on_finish = on_finish
 		self.__data, self.__samplerate = sf.read(self.__filename, always_2d=True)
 	
@@ -47,7 +49,24 @@ class PlaybackManager:
 
 		if not self.__stream:
 			return
+		self.__finish_called = False
 		self.__current_frame = 0
+
+	def stop(self):
+		"""Stops the player"""
+
+		if not self.__stream:
+			return
+		self.__stream.abort()
+
+	def stop_no_callback(self):
+		"""Stops the stream without calling on_finish"""
+
+		self.__finish_called = True
+		self.stop()
+	
+	def destroy(self):
+		self.stop()
 
 	def __callback(self, outdata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
 		if status:
@@ -63,5 +82,6 @@ class PlaybackManager:
 		self.__logger.debug(f"Playback of {self.__filename} finished")
 		self.__stream.stop()
 		self.__stream.close()
-		if self.on_finish:
+		if self.on_finish and not self.__finish_called:
+			self.__finish_called == True
 			self.on_finish()

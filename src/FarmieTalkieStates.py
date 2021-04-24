@@ -38,6 +38,7 @@ def get_states() -> List[dict]:
 			{
 				"name": "play_message",
 				"entry": "play_notify_sound; show_playing",
+				"exit": "stop_playing",
 				"disconnect": "defer",
 				"message": "defer"
 			},
@@ -49,7 +50,6 @@ def get_states() -> List[dict]:
 			},
 			{
 				"name": "replay_message",
-				# "entry": "play(msg)", # TODO: Unsure about syntax
 				"disconnect": "defer",
 				"message": "defer"
 			}

@@ -17,6 +17,7 @@ class FarmieTalkie:
 	def __init__(self):
 		self.__logger = logging.getLogger(__name__)
 		self.__stm = None
+		self.__message_player = None
 		
 		# Needs to be public to give the driver access
 		self.transitions = FarmieTalkieStates.get_transitions()
@@ -58,9 +59,14 @@ class FarmieTalkie:
 		self.__logger.debug("Received voice message")
 		with open("temp.ogg", "wb") as file:
 			file.write(message)
-		player = PlaybackManager("temp.ogg")
-		player.on_finish = lambda: self.__stm.send("playback_finished")
-		player.play()
+		self.__message_player = PlaybackManager("temp.ogg")
+		self.__message_player.on_finish = lambda: self.__stm.send("playback_finished")
+		self.__message_player.play()
+	
+	def stop_playing(self):
+		if self.__message_player:
+			# Need to use stop_no_callback to prevent skipping the next message in the queue
+			self.__message_player.stop_no_callback()
 
 	
 	def start_recording(self):
@@ -75,7 +81,7 @@ class FarmieTalkie:
 		with open(self.recording_manager.get_recording(), "rb") as recording_file:
 			recording = bytearray(recording_file.read())
 			self.mqtt.send_message(recording)
-	
+
 	def connect(self):
 		pass
 	
