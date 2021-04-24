@@ -3,6 +3,7 @@ import logging
 import sounddevice as sd
 import soundfile as sf
 from signal import signal, SIGINT
+from typing import List
 
 import FarmieTalkieStates
 from GUIHandler import GUIHandler, Frame
@@ -88,8 +89,10 @@ class FarmieTalkie:
 	def subscribe(self):
 		pass
 	
-	def unsubscribe(self):
-		pass
+	def unsubscribe(self, channels: List[str]):
+		for channel in channels:
+			self.mqtt.remove_channel(channel)
+		self.gui.view_frame(Frame.MANAGE_CHANNELS) # Refresh channels
 
 
 	# GUI Handling

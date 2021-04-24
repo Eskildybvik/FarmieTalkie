@@ -21,7 +21,7 @@ class Frame(IntEnum):
 class GUIHandler():
 	"""Class for creating and running the graphical user interface."""
 
-	def press(self, button: str):
+	def __press(self, button: str):
 		self.__logger.debug(f"Button pressed: {button}")
 		if button == "RECORD":
 			self.__stm.send("record_button_press")
@@ -50,7 +50,7 @@ class GUIHandler():
 
 		# "Hardware" buttons
 		self.__app.startFrame("HARDWARE", row=1)
-		self.__app.addButtons(["RECORD", "BACK", "STOP_RECORD"], lambda btn: self.press(btn))
+		self.__app.addButtons(["RECORD", "STOP_RECORD", "BACK"], lambda btn: self.__press(btn))
 		self.__app.stopFrame()
 	
 	def start(self):
@@ -117,7 +117,12 @@ class GUIHandler():
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.MANAGE_CHANNELS.name)
 		self.__app.addListBox("Subscribed channels", self.__mqtt.subscribed_channels)
-		self.__app.addButton("Add channel", lambda btn: self.__stm.send("add_button"))
+		def manage_channel_buttons(btn: str):
+			if btn == "Add channel":
+				self.__stm.send("add_button")
+			elif btn == "Delete selected":
+				self.__stm.send("delete", args=[self.__app.getListBox("Subscribed channels")])
+		self.__app.addButtons(["Add channel", "Delete selected"], manage_channel_buttons)
 		self.__app.stopFrame()
 
 	def __create_add_channel_frame(self):

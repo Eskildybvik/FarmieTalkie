@@ -152,6 +152,12 @@ def get_transitions() -> List[dict]:
 		"trigger": "add_button"
 	})
 	transitions.append({
+		"source": "manage_channels",
+		"target": "manage_channels",
+		"trigger": "delete",
+		"effect": "unsubscribe(*)"
+	})
+	transitions.append({
 		"source": "add_channel",
 		"target": "manage_channels",
 		"trigger": "confirm_button"
