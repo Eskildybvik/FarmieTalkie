@@ -1,4 +1,5 @@
 stmpy
 paho-mqtt
 appJar
-simpleaudio
+sounddevice
+soundfile

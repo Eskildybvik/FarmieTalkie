@@ -22,6 +22,8 @@ class GUIHandler():
 			self.stm.send("record_button_press")
 		elif button == "BACK":
 			self.stm.send("back_button_press")
+		elif button == "STOP_RECORD":
+			self.stm.send("record_button_release")
 
 	def __init__(self, stm: stmpy.Machine, mqtt: MQTTClient):
 		self._logger = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ class GUIHandler():
 		self.frame_init()
 		self.app.stopFrameStack()
 		self.app.startFrame("HARDWARE", row=1)
-		self.app.addButtons(["RECORD", "BACK"], lambda btn: self.press(btn))
+		self.app.addButtons(["RECORD", "BACK", "STOP_RECORD"], lambda btn: self.press(btn))
 		self.app.stopFrame()
 	
 	def start(self):

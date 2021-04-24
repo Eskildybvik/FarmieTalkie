@@ -69,8 +69,10 @@ class MQTTClient:
 	
 	# TODO: Decide what to send: bytesarray or base64 encoded bytesarray w/json. 
 	def send_message(self, message: bytearray):
-		self._logger.debug(f"Sending message to channel {channel}...")
-		self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + channel, payload=message, qos=2)
+		self._logger.debug(f"Sending message to channel {self.selected_channel}...")
+		sent_message = self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + self.selected_channel, payload=message, qos=2)
+		sent_message.wait_for_publish()
+		self.stm.send("message_sent")
 
 	def destroy(self):
 		self.mqtt_client.disconnect()

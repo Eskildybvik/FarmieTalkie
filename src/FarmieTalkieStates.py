@@ -36,7 +36,7 @@ def get_states():
 			},
 			{
 				"name": "play_message",
-				"entry": "play_notify_sound",
+				"entry": "play_notify_sound; show_playing",
 				"disconnect": "defer",
 				"message": "defer"
 			},
@@ -131,6 +131,7 @@ def get_transitions() -> list:
 	transitions.append({
 		"source": "recording_message",
 		"target": "sending_message",
+		"effect": "stop_recording",
 		"trigger": "record_button_release"
 	})
 	transitions.append({
