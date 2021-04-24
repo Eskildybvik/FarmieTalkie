@@ -5,7 +5,7 @@
 import paho.mqtt.client as mqtt
 
 def generate_test_sound() -> bytearray: 
-	f = open("assets/testsound.wav", "rb")
+	f = open("assets/testsound.ogg", "rb")
 	test_file = f.read()
 	f.close()
 	byteArray = bytearray(test_file)
