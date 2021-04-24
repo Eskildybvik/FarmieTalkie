@@ -32,13 +32,13 @@ class MQTTClient:
 			A reference to the state machine that includes this MQTTClient
 		"""
 		
-		self._logger = logging.getLogger(__name__)
+		self.__logger = logging.getLogger(__name__)
 		self.subscribed_channels = []
 		self.selected_channel = ""
 
-		self._stm = stm
+		self.__stm = stm
 		# create a new MQTT client
-		self._logger.debug(f'Connecting to MQTT broker {MQTT_BROKER} at port {MQTT_PORT}')
+		self.__logger.debug(f'Connecting to MQTT broker {MQTT_BROKER} at port {MQTT_PORT}')
 		self.mqtt_client = mqtt.Client()
 		# callback methods
 		self.mqtt_client.on_connect = self.on_connect
@@ -50,21 +50,21 @@ class MQTTClient:
 
 	# subscribe_stored_channels in diagram
 	def on_connect(self, client: mqtt.Client, userdata, flags, rc):
-		self._logger.debug("Connected to broker")
-		self._stm.send("connect")
+		self.__logger.debug("Connected to broker")
+		self.__stm.send("connect")
 		for channel in self.subscribed_channels:
 			self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
 			
 	def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
 		payload = msg.payload
-		self._logger.debug(f"Received message on channel {msg.topic}")
+		self.__logger.debug(f"Received message on channel {msg.topic}")
 		if (msg.topic.startswith(MQTT_CHANNEL_PREFIX)):
-			self._stm.send("message", args=[payload])
+			self.__stm.send("message", args=[payload])
 		
-		self._logger.debug(f"length of message: {len(payload)}")
+		self.__logger.debug(f"length of message: {len(payload)}")
 
 	def on_disconnect(self, client: mqtt.Client, userdata, rc):
-		self._stm.send("disconnect")
+		self.__stm.send("disconnect")
 
 	def add_channel(self, channel: str):
 		"""Subscribe to a channel."""
@@ -91,10 +91,10 @@ class MQTTClient:
 			A wav file from open(path, "rb").read()
 		"""
 
-		self._logger.debug(f"Sending message to channel {self.selected_channel}...")
+		self.__logger.debug(f"Sending message to channel {self.selected_channel}...")
 		sent_message = self.mqtt_client.publish(MQTT_CHANNEL_PREFIX + self.selected_channel, payload=message, qos=2)
 		sent_message.wait_for_publish()
-		self._stm.send("message_sent")
+		self.__stm.send("message_sent")
 
 	def destroy(self):
 		"""Destructor for this class. Disconnects from MQTT"""

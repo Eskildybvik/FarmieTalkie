@@ -15,8 +15,8 @@ class FarmieTalkie:
 	"""Main class of the FarmieTalkie system. Keeps everything together."""
 
 	def __init__(self):
-		self._logger = logging.getLogger(__name__)
-		self._stm = None
+		self.__logger = logging.getLogger(__name__)
+		self.__stm = None
 		
 		# Needs to be public to give the driver access
 		self.transitions = FarmieTalkieStates.get_transitions()
@@ -30,13 +30,13 @@ class FarmieTalkie:
 	# Needed for the setter to work
 	@property
 	def stm(self):
-		return self._stm
+		return self.__stm
 	
 	@stm.setter
 	def stm(self, stm: stmpy.Machine):
-		self._stm = stm
-		self.mqtt = MQTTClient(self._stm)
-		self.gui = GUIHandler(self._stm, self.mqtt)
+		self.__stm = stm
+		self.mqtt = MQTTClient(self.__stm)
+		self.gui = GUIHandler(self.__stm, self.mqtt)
 
 	def start(self):
 		self.gui.start()
@@ -57,7 +57,7 @@ class FarmieTalkie:
 		with open("temp.wav", "wb") as file:
 			file.write(message)
 		player = PlaybackManager("temp.wav")
-		player.on_finish = lambda: self._stm.send("playback_finished")
+		player.on_finish = lambda: self.__stm.send("playback_finished")
 		player.play()
 
 	

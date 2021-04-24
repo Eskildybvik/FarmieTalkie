@@ -6,6 +6,7 @@ import soundfile as sf
 import numpy # Needs to be loaded for sounddevice to work correctly
 assert numpy # Prevents "not used" warning
 
+
 class PlaybackManager:
 	"""Helper class for playing audio files asynchronously.
 	
@@ -25,42 +26,41 @@ class PlaybackManager:
 			Callback for when audio is finished
 		"""
 
-		self._logger = logging.getLogger()
-		self._filename = filename
-		self._stream = None
-		self._current_frame = 0
-		self._q = queue.Queue()
+		self.__logger = logging.getLogger()
+		self.__filename = filename
+		self.__stream = None
+		self.__current_frame = 0
 		self.on_finish = on_finish
-		self._data, self._fs = sf.read(self._filename, always_2d=True)
+		self.__data, self.__samplerate = sf.read(self.__filename, always_2d=True)
 	
 	def play(self):
 		"""Start the playback at the default output device"""
 
-		self._stream = sd.OutputStream(
-			callback=self._callback, samplerate=self._fs, channels=self._data.shape[1],
-			finished_callback=self._on_finish_internal
+		self.__stream = sd.OutputStream(
+			callback=self.__callback, samplerate=self.__samplerate, channels=self.__data.shape[1],
+			finished_callback=self.__on_finish_internal
 		)
-		self._stream.start()
+		self.__stream.start()
 	
 	def reset(self):
 		"""Reset the player (for re-using the audio file)"""
 
-		if not self._stream:
+		if not self.__stream:
 			return
-		self._current_frame = 0
+		self.__current_frame = 0
 
-	def _callback(self, outdata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
+	def __callback(self, outdata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
 		if status:
-			self._logger.warning(status)
-		chunksize = min(len(self._data) - self._current_frame, frames)
-		outdata[:chunksize] = self._data[self._current_frame:(self._current_frame + chunksize)]
+			self.__logger.warning(status)
+		chunksize = min(len(self.__data) - self.__current_frame, frames)
+		outdata[:chunksize] = self.__data[self.__current_frame:(self.__current_frame + chunksize)]
 		if chunksize < frames:
 			outdata[chunksize:] = 0
 			raise sd.CallbackStop()
-		self._current_frame += chunksize
+		self.__current_frame += chunksize
 	
-	def _on_finish_internal(self):
-		self._stream.stop()
-		self._stream.close()
+	def __on_finish_internal(self):
+		self.__stream.stop()
+		self.__stream.close()
 		if self.on_finish:
 			self.on_finish()
