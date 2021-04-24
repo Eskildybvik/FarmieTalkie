@@ -1,35 +1,43 @@
 import stmpy
-import FarmieTalkieStates
 import logging
-from signal import signal, SIGINT
-from GUIHandler import GUIHandler, Frame
-from MQTTClient import MQTTClient
-# from AudioManager import AudioManager
-from RecordingManager import RecordingManager
-from PlaybackManager import PlaybackManager
 import sounddevice as sd
 import soundfile as sf
-import wave
+from signal import signal, SIGINT
+
+import FarmieTalkieStates
+from GUIHandler import GUIHandler, Frame
+from MQTTClient import MQTTClient
+from RecordingManager import RecordingManager
+from PlaybackManager import PlaybackManager
+
 
 class FarmieTalkie:
 	def __init__(self):
 		self._logger = logging.getLogger(__name__)
-		# Will be set in the main function
-		self.gui = None
-		self.mqtt = None
-		self.stm = None
-
-		# self.audio_manager = AudioManager()
-		self.recording_manager = RecordingManager()
+		self._stm = None
 		
-		# transitions done, check src/FarmieTalkieStates.py
+		# Needs to be public to give the driver access
 		self.transitions = FarmieTalkieStates.get_transitions()
-		
-		# States done, check src/FarmieTalkieStates.py
 		self.states = FarmieTalkieStates.get_states()
 
+		self.recording_manager = RecordingManager()
+		# Pre-load the two sound effects used
 		self.notification_player = PlaybackManager("./assets/notification.wav")
 		self.confirmation_player = PlaybackManager("./assets/confirmation.wav")
+	
+	# Needed for the setter to work
+	@property
+	def stm(self):
+		return self._stm
+	
+	@stm.setter
+	def stm(self, stm):
+		self._stm = stm
+		self.mqtt = MQTTClient(self._stm)
+		self.gui = GUIHandler(self._stm, self.mqtt)
+
+	def start(self):
+		self.gui.start()
 	
 	# Media handling
 	# Upon message play successful connection.
@@ -47,13 +55,8 @@ class FarmieTalkie:
 		with open("temp.wav", "wb") as file:
 			file.write(message)
 		player = PlaybackManager("temp.wav")
-		player.on_finish = lambda: self.stm.send("playback_finished")
+		player.on_finish = lambda: self._stm.send("playback_finished")
 		player.play()
-		
-		# with sf.read(self.recording_manager.get_recording()) as wave:
-			# sa.play_buffer()
-		# data, fs = sf.read(self.recording_manager.get_recording())
-		# sd.play(data, fs)
 
 	
 	def start_recording(self):
@@ -62,6 +65,7 @@ class FarmieTalkie:
 	def stop_recording(self):
 		self.recording_manager.stop_recording()
 	
+
 	# Message handling
 	def send_message(self):
 		with open(self.recording_manager.get_recording(), "rb") as recording_file:
@@ -106,7 +110,6 @@ class FarmieTalkie:
 	def destroy(self):
 		self.mqtt.destroy()
 		self.gui.destroy()
-		self.audio_manager.destroy()
 		
 
 		
@@ -121,15 +124,11 @@ def main():
 		farmietalkie_machine, 
 		states=farmietalkie_machine.states
 	)
-	farmietalkie_machine.stm = stm
 	stm_driver.add_machine(stm)
-	# self._logger.debug('Component initialization finished')
-	mqtt = MQTTClient(stm)
-	farmietalkie_machine.mqtt = mqtt
-	gui = GUIHandler(stm, mqtt)
-	farmietalkie_machine.gui = gui
+	farmietalkie_machine.stm = stm
 	stm_driver.start(keep_active=True)
-	gui.start()
+	farmietalkie_machine.start()
+
 
 
 if __name__ == "__main__":
