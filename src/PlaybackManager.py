@@ -14,11 +14,11 @@ class PlaybackManager:
 		self._current_frame = 0
 		self._q = queue.Queue()
 		self.on_finish = on_finish
-		self.data, self.fs = sf.read(self.filename, always_2d=True)
+		self._data, self._fs = sf.read(self.filename, always_2d=True)
 	
 	def play(self):
 		self._stream = sd.OutputStream(
-			callback=self._callback, samplerate=self.fs, channels=self.data.shape[1],
+			callback=self._callback, samplerate=self._fs, channels=self._data.shape[1],
 			finished_callback=self._on_finish_internal
 		)
 		self._stream.start()
@@ -31,8 +31,8 @@ class PlaybackManager:
 	def _callback(self, outdata, frames, time, status):
 		if status:
 			self._logger.warning(status)
-		chunksize = min(len(self.data) - self._current_frame, frames)
-		outdata[:chunksize] = self.data[self._current_frame:(self._current_frame + chunksize)]
+		chunksize = min(len(self._data) - self._current_frame, frames)
+		outdata[:chunksize] = self._data[self._current_frame:(self._current_frame + chunksize)]
 		if chunksize < frames:
 			outdata[chunksize:] = 0
 			raise sd.CallbackStop()

@@ -19,103 +19,102 @@ class GUIHandler():
 	def press(self, button):
 		self._logger.debug(f"Button pressed: {button}")
 		if button == "RECORD":
-			self.stm.send("record_button_press")
+			self._stm.send("record_button_press")
 		elif button == "BACK":
-			self.stm.send("back_button_press")
+			self._stm.send("back_button_press")
 		elif button == "STOP_RECORD":
-			self.stm.send("record_button_release")
+			self._stm.send("record_button_release")
 
 	def __init__(self, stm: stmpy.Machine, mqtt: MQTTClient):
 		self._logger = logging.getLogger(__name__)
-		self.stm = stm
-		self.mqtt = mqtt
-		self.app = gui("FarmieTalkie", "320x480")
-		self.app.startFrameStack("DISPLAY", start=Frame.MAIN)
-		self.frame_init()
-		self.app.stopFrameStack()
-		self.app.startFrame("HARDWARE", row=1)
-		self.app.addButtons(["RECORD", "BACK", "STOP_RECORD"], lambda btn: self.press(btn))
-		self.app.stopFrame()
+		self._stm = stm
+		self._mqtt = mqtt
+		self._app = gui("FarmieTalkie", "320x480")
+		self._app.startFrameStack("DISPLAY", start=Frame.MAIN)
+		self._frame_init()
+		self._app.stopFrameStack()
+		self._app.startFrame("HARDWARE", row=1)
+		self._app.addButtons(["RECORD", "BACK", "STOP_RECORD"], lambda btn: self.press(btn))
+		self._app.stopFrame()
 	
 	def start(self):
-		self.app.go()
+		self._app.go()
 	
 	def destroy(self):
-		self.app.stop()
+		self._app.stop()
 	
 	def view_frame(self, frame: Frame):
 		if frame == Frame.MANAGE_CHANNELS:
-			self.app.updateListBox("Subscribed channels", self.mqtt.subscribed_channels)
-		self.app.selectFrame("DISPLAY", frame)
+			self._app.updateListBox("Subscribed channels", self._mqtt.subscribed_channels)
+		self._app.selectFrame("DISPLAY", frame)
 	
-	def frame_init(self):
-		self.create_main_frame()
-		self.create_select_channel_frame()
-		self.create_recording_frame()
-		self.create_sending_message_frame()
-		self.create_manage_channels_frame()
-		self.create_add_channel_frame()
-		self.create_view_log_frame()
-		self.create_playing_message_frame()
+	def _frame_init(self):
+		self._create_main_frame()
+		self._create_select_channel_frame()
+		self._create_recording_frame()
+		self._create_sending_message_frame()
+		self._create_manage_channels_frame()
+		self._create_add_channel_frame()
+		self._create_view_log_frame()
+		self._create_playing_message_frame()
 
 
-	def create_main_frame(self):
-		self.app.startFrame("BUTTONS", row=5, column=0)
-		self.app.addLabel(Frame.MAIN.name)
-		self.app.addButton("Select channel", lambda btn: self.stm.send("select_button"))
-		self.app.addButton("Manage channels", lambda btn: self.stm.send("manage_button"))
-		self.app.addButton("View log", lambda btn: self.stm.send("view_log_button"))
-		self.app.stopFrame()
+	def _create_main_frame(self):
+		self._app.startFrame("BUTTONS", row=5, column=0)
+		self._app.addLabel(Frame.MAIN.name)
+		self._app.addButton("Select channel", lambda btn: self._stm.send("select_button"))
+		self._app.addButton("Manage channels", lambda btn: self._stm.send("manage_button"))
+		self._app.addButton("View log", lambda btn: self._stm.send("view_log_button"))
+		self._app.stopFrame()
 
-	def create_select_channel_frame(self):
+	def _create_select_channel_frame(self):
 		entryTitle = "Selected channel name"
-		self.app.startFrame()
-		self.app.addLabel(Frame.SELECT_CHANNEL.name)
-		self.app.addLabelEntry(entryTitle)
+		self._app.startFrame()
+		self._app.addLabel(Frame.SELECT_CHANNEL.name)
+		self._app.addLabelEntry(entryTitle)
 		def select_channel_callback(btn: str):
-			self.mqtt.selected_channel = self.app.getEntry(entryTitle)
-			self.stm.send("back_button_press")
-		self.app.addButton("Confirm channel", select_channel_callback)
-		self.app.stopFrame()
+			self._mqtt.selected_channel = self._app.getEntry(entryTitle)
+			self._stm.send("back_button_press")
+		self._app.addButton("Confirm channel", select_channel_callback)
+		self._app.stopFrame()
 
-	def create_recording_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.RECORDING_MESSAGE.name)
-		self.app.stopFrame()
+	def _create_recording_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.RECORDING_MESSAGE.name)
+		self._app.stopFrame()
 
-	def create_sending_message_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.SENDING_MESSAGE.name)
-		self.app.stopFrame()
+	def _create_sending_message_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.SENDING_MESSAGE.name)
+		self._app.stopFrame()
 
-	def create_manage_channels_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.MANAGE_CHANNELS.name)
-		self.app.addListBox("Subscribed channels", self.mqtt.subscribed_channels)
-		# self.app.addLabelEntry("Channel Name")
-		self.app.addButton("Add channel", lambda btn: self.stm.send("add_button"))
-		self.app.stopFrame()
+	def _create_manage_channels_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.MANAGE_CHANNELS.name)
+		self._app.addListBox("Subscribed channels", self._mqtt.subscribed_channels)
+		self._app.addButton("Add channel", lambda btn: self._stm.send("add_button"))
+		self._app.stopFrame()
 
-	def create_add_channel_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.ADD_CHANNEL.name)
+	def _create_add_channel_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.ADD_CHANNEL.name)
 		entryTitle = "Add channel"
-		self.app.addLabelEntry(entryTitle)
+		self._app.addLabelEntry(entryTitle)
 		def select_channel_callback(btn: str):
-			self.mqtt.add_channel(self.app.getEntry(entryTitle))
-			self.stm.send("confirm_button")
-		self.app.addButton("Confirm channel to add", select_channel_callback)
-		self.app.stopFrame()
+			self._mqtt.add_channel(self._app.getEntry(entryTitle))
+			self._stm.send("confirm_button")
+		self._app.addButton("Confirm channel to add", select_channel_callback)
+		self._app.stopFrame()
 
 	# TODO: Missing showing recordings
-	def create_view_log_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.VIEW_LOG.name)
-		self.app.stopFrame()
+	def _create_view_log_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.VIEW_LOG.name)
+		self._app.stopFrame()
 
-	def create_playing_message_frame(self):
-		self.app.startFrame()
-		self.app.addLabel(Frame.PLAYING_MESSAGE.name)
-		self.app.stopFrame()
+	def _create_playing_message_frame(self):
+		self._app.startFrame()
+		self._app.addLabel(Frame.PLAYING_MESSAGE.name, text="Playing incoming message...")
+		self._app.stopFrame()
 
 
