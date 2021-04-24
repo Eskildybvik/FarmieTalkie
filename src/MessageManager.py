@@ -127,21 +127,3 @@ class MessageManager:
             os.remove(first_file_path)
             self.write_message(new_last_item_file_name, message)
         
-
-m = MessageManager()
-
-f = get_file_names(m.PATH)
-print(f)
-c = m.clean_file_names(f)
-print(c)
-last = m.new_message_name(c)
-print(last)
-
-# with open("./assets/confirmation.wav", "rb") as f:
-#     file = f.read()
-
-#     for i in range(10):
-#         m.new_message(file)
-
-s = m.get_current_messages()
-print("hello")
