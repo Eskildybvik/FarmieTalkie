@@ -9,7 +9,7 @@ def create_folder(folder_name: str):
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-def get_file_names(path):
+def get_file_names(path: str) -> list[str]:
     onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
     return onlyfiles
 
@@ -25,7 +25,7 @@ class MessageManager:
     def __init__(self):
         create_folder(self.FOLDER_NAME)
 
-    def get_current_messages(self):
+    def get_current_messages(self) -> list[bytearray]:
         """ This method loads all the messages from the path into memory. Path is standard './messages". This method should be called anew every time a new message is added so that the data is never stale. 
         """
         file_names = get_file_names(self.PATH)
@@ -37,9 +37,6 @@ class MessageManager:
             with open(path, "rb") as f:
                 file = f.read()
                 files.append(file)
-
-
-        #print(f"Length of files in memory: {len(files)}")
 
         return files
 

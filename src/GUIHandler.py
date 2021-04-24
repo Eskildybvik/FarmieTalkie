@@ -16,7 +16,7 @@ class Frame(IntEnum):
 
 
 class GUIHandler():
-	def press(self, button):
+	def press(self, button: str):
 		self._logger.debug(f"Button pressed: {button}")
 		if button == "RECORD":
 			self._stm.send("record_button_press")

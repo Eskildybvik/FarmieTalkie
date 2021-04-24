@@ -31,7 +31,7 @@ class FarmieTalkie:
 		return self._stm
 	
 	@stm.setter
-	def stm(self, stm):
+	def stm(self, stm: stmpy.Machine):
 		self._stm = stm
 		self.mqtt = MQTTClient(self._stm)
 		self.gui = GUIHandler(self._stm, self.mqtt)

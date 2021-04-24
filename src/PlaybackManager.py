@@ -3,8 +3,8 @@ import queue
 import threading
 import sounddevice as sd
 import soundfile as sf
-import numpy
-assert numpy
+import numpy # Needs to be loaded for sounddevice to work correctly
+assert numpy # Prevents "not used" warning
 
 class PlaybackManager:
 	def __init__(self, filename: str, on_finish: callable = None):
@@ -28,7 +28,7 @@ class PlaybackManager:
 			return
 		self._current_frame = 0
 
-	def _callback(self, outdata, frames, time, status):
+	def _callback(self, outdata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
 		if status:
 			self._logger.warning(status)
 		chunksize = min(len(self._data) - self._current_frame, frames)

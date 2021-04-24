@@ -33,10 +33,10 @@ class RecordingManager:
 	def stop_recording(self):
 		self.recording = False
 
-	def get_recording(self):
+	def get_recording(self) -> str:
 		return self.TEMP_FILE_NAME
 
-	def callback(self, indata, frames, time, status):
+	def callback(self, indata: numpy.ndarray, frames: int, time, status: sd.CallbackFlags):
 		if status:
 			self._logger.error(f"Audio recording error: {status}")
 		self._buffer.put(indata.copy())

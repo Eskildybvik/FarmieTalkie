@@ -1,5 +1,6 @@
+from typing import List
 
-def get_states():
+def get_states() -> List[dict]:
 	states = [
 			{
 				"name": "disconnected",
@@ -87,7 +88,7 @@ def generate_playback_finished(source: str, target: str) -> dict:
 	}
 	return playback_finished_transition
 
-def get_transitions() -> list:
+def get_transitions() -> List[dict]:
 	transitions = []
 
 	states_with_disconnects = [

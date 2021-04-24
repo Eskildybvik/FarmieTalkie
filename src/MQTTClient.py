@@ -10,7 +10,6 @@ MQTT_CHANNEL_PREFIX = "farmietalkie/message/"
 
 
 class MQTTClient:
-
 	def __init__(self, stm: stmpy.Machine):
 		self._logger = logging.getLogger(__name__)
 		self.subscribed_channels = []
@@ -29,13 +28,13 @@ class MQTTClient:
 		self.mqtt_client.loop_start()
 
 	# subscribe_stored_channels in diagram
-	def on_connect(self, client, userdata, flags, rc):
+	def on_connect(self, client: mqtt.Client, userdata, flags, rc):
 		self._logger.debug("Connected to broker")
 		self._stm.send("connect")
 		for channel in self.subscribed_channels:
 			self.mqtt_client.subscribe(MQTT_CHANNEL_PREFIX + channel)
 			
-	def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
+	def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
 		payload = msg.payload
 		self._logger.debug(f"Received message on channel {msg.topic}")
 		if (msg.topic.startswith(MQTT_CHANNEL_PREFIX)):
@@ -43,7 +42,7 @@ class MQTTClient:
 		
 		self._logger.debug(f"length of message: {len(payload)}")
 
-	def on_disconnect(self, client, userdata, rc):
+	def on_disconnect(self, client: mqtt.Client, userdata, rc):
 		self._stm.send("disconnect")
 
 	def add_channel(self, channel: str):
@@ -66,7 +65,3 @@ class MQTTClient:
 
 	def destroy(self):
 		self.mqtt_client.disconnect()
-
-	
-
-		
