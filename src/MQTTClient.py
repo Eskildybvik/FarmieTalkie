@@ -32,7 +32,7 @@ class MQTTClient:
 		"""
 		
 		self.__logger = logging.getLogger(__name__)
-		self.subscribed_channels = []
+		self.subscribed_channels = ["broadcast"]
 		self.selected_channel = ""
 
 		self.__stm = stm
