@@ -22,6 +22,7 @@ class MQTTClient:
 	MQTT_BROKER = 'vps.esdy.io'
 	MQTT_PORT = 16805
 	MQTT_CHANNEL_PREFIX = "farmietalkie/message/"
+	BROADCAST_CHANNEL = "broadcast"
 
 	def __init__(self, stm: stmpy.Machine):
 		"""
@@ -32,7 +33,7 @@ class MQTTClient:
 		"""
 		
 		self.__logger = logging.getLogger(__name__)
-		self.subscribed_channels = ["broadcast"]
+		self.subscribed_channels = [self.BROADCAST_CHANNEL]
 		self.selected_channel = ""
 
 		self.__stm = stm
@@ -76,6 +77,9 @@ class MQTTClient:
 
 	def remove_channel(self, channel: str):
 		"""Unsubscribe from a channel."""
+
+		if channel == self.BROADCAST_CHANNEL:
+			return # Cannot unsubscribe from the broadcast channel
 
 		if channel in self.subscribed_channels:
 			self.subscribed_channels.remove(channel)
