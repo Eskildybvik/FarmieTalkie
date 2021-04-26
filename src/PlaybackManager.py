@@ -2,7 +2,6 @@ import logging
 import threading
 import sounddevice as sd
 import soundfile as sf
-from time import sleep
 import numpy # Needs to be loaded for sounddevice to work correctly
 assert numpy # Prevents "not used" warning
 
