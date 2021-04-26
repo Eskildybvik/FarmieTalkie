@@ -130,12 +130,15 @@ class FarmieTalkie:
 	def show_playing(self):
 		self.gui.view_frame(Frame.PLAYING_MESSAGE)
 	
+	def show_disconnected(self):
+		self.gui.view_frame(Frame.DISCONNECTED)
+	
 	def destroy(self):
 		self.mqtt.destroy()
 		self.gui.destroy()
 		
 
-		
+
 def main():
 	logging.basicConfig(level=logging.DEBUG)
 	stm_driver = stmpy.Driver()

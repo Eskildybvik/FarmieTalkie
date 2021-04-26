@@ -16,6 +16,7 @@ class Frame(IntEnum):
 	ADD_CHANNEL = 5
 	VIEW_LOG = 6
 	PLAYING_MESSAGE = 7
+	DISCONNECTED = 8
 
 
 class GUIHandler():
@@ -91,11 +92,12 @@ class GUIHandler():
 		self.__create_add_channel_frame()
 		self.__create_view_log_frame()
 		self.__create_playing_message_frame()
+		self.__create_disconnected_frame()
 
 
 	def __create_main_frame(self):
 		self.__app.startFrame("BUTTONS", row=5, column=0)
-		self.__app.addLabel(Frame.MAIN.name)
+		self.__app.addLabel(Frame.MAIN.name, text="Listening for incoming messages")
 		self.__app.addButton("Select channel", lambda btn: self.__stm.send("select_button"))
 		self.__app.addButton("Manage channels", lambda btn: self.__stm.send("manage_button"))
 		self.__app.addButton("View log", lambda btn: self.__stm.send("view_log_button"))
@@ -104,7 +106,7 @@ class GUIHandler():
 	def __create_select_channel_frame(self):
 		entryTitle = "Selected channel name"
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.SELECT_CHANNEL.name)
+		self.__app.addLabel(Frame.SELECT_CHANNEL.name, text="Select channel to send messages to")
 		self.__app.addLabelEntry(entryTitle)
 		def select_channel_callback(btn: str):
 			self.__mqtt.selected_channel = self.__app.getEntry(entryTitle)
@@ -114,17 +116,17 @@ class GUIHandler():
 
 	def __create_recording_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.RECORDING_MESSAGE.name)
+		self.__app.addLabel(Frame.RECORDING_MESSAGE.name, text="Recording...")
 		self.__app.stopFrame()
 
 	def __create_sending_message_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.SENDING_MESSAGE.name)
+		self.__app.addLabel(Frame.SENDING_MESSAGE.name, text="Sending...")
 		self.__app.stopFrame()
 
 	def __create_manage_channels_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.MANAGE_CHANNELS.name)
+		self.__app.addLabel(Frame.MANAGE_CHANNELS.name, text="Manage subscribed channels")
 		self.__app.addListBox("Subscribed channels", self.__mqtt.subscribed_channels)
 		def manage_channel_buttons(btn: str):
 			if btn == "Add channel":
@@ -136,7 +138,7 @@ class GUIHandler():
 
 	def __create_add_channel_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.ADD_CHANNEL.name)
+		self.__app.addLabel(Frame.ADD_CHANNEL.name, text="Add new channel")
 		entryTitle = "Add channel"
 		self.__app.addLabelEntry(entryTitle)
 		def select_channel_callback(btn: str):
@@ -159,5 +161,10 @@ class GUIHandler():
 
 	def __create_playing_message_frame(self):
 		self.__app.startFrame()
-		self.__app.addLabel(Frame.PLAYING_MESSAGE.name, text="Playing incoming message...")
+		self.__app.addLabel(Frame.PLAYING_MESSAGE.name, text="Playing message...")
+		self.__app.stopFrame()
+
+	def __create_disconnected_frame(self):
+		self.__app.startFrame()
+		self.__app.addLabel(Frame.DISCONNECTED.name, text="Not connected to broker")
 		self.__app.stopFrame()

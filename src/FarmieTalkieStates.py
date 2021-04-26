@@ -4,7 +4,7 @@ def get_states() -> List[dict]:
 	states = [
 			{
 				"name": "disconnected",
-				"entry": "connect"
+				"entry": "show_disconnected; connect"
 			},
 			{
 				"name": "main",
@@ -51,6 +51,7 @@ def get_states() -> List[dict]:
 			{
 				"name": "replay_message",
 				"disconnect": "defer",
+				"entry": "show_playing",
 				"exit": "stop_playing",
 				"message": "defer"
 			}
