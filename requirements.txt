@@ -1,5 +1,6 @@
 stmpy
 paho-mqtt
 appJar
+numpy
 sounddevice
 soundfile
