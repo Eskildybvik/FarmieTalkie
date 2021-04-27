@@ -93,7 +93,7 @@ class FarmieTalkie:
 			self.mqtt.send_message(recording)
 
 	def connect(self):
-		pass
+		self.mqtt.connect()
 	
 	def subscribe(self):
 		pass

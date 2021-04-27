@@ -44,9 +44,13 @@ class MQTTClient:
 		self.mqtt_client.on_connect = self.on_connect
 		self.mqtt_client.on_message = self.on_message
 		self.mqtt_client.on_disconnect = self.on_disconnect
-
-		self.mqtt_client.connect(self.MQTT_BROKER, self.MQTT_PORT)
-		self.mqtt_client.loop_start()
+	
+	def connect(self):
+		try:
+			self.mqtt_client.connect(self.MQTT_BROKER, self.MQTT_PORT)
+			self.mqtt_client.loop_start()
+		except:
+			pass
 
 	# subscribe_stored_channels in diagram
 	def on_connect(self, client: mqtt.Client, userdata, flags, rc):

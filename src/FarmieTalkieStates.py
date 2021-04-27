@@ -127,6 +127,12 @@ def get_transitions() -> List[dict]:
 		"trigger": "connect"
 	})
 	transitions.append({
+		"source": "disconnected",
+		"target": "disconnected",
+		"trigger": "reconnect_button",
+		"effect": "connect"
+	})
+	transitions.append({
 		"source": "main",
 		"target": "select_channel",
 		"trigger": "select_button"

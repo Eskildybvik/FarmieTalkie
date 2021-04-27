@@ -167,4 +167,5 @@ class GUIHandler():
 	def __create_disconnected_frame(self):
 		self.__app.startFrame()
 		self.__app.addLabel(Frame.DISCONNECTED.name, text="Not connected to broker")
+		self.__app.addButton("Reconnect", lambda btn: self.__stm.send("reconnect_button"))
 		self.__app.stopFrame()
